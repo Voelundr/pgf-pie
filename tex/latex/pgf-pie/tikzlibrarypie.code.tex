@@ -100,19 +100,18 @@
   \pgfmathparse{int(mod(#2,\the\pgfpie@colorLength))}%
   \let\pgfpie@ci\pgfmathresult
   
-  \ifodd#1 {
+  \pgfpie@ifodd{#1}{%
     \let\pgfpie@colorlist\empty
-    \foreach\x in \pgfpie@color {
-      \ifx\pgfpie@colorlist\empty
+    \foreach\x in \pgfpie@color {%
+      \pgfpie@ifx\pgfpie@colorlist\pgfutil@empty{%
         \xdef\pgfpie@colorlist{\x}%
-      \else
+      }{%
         \xdef\pgfpie@colorlist{\x,\pgfpie@colorlist}%
-      \fi
-    }
-  }
-  \else
+      }%
+    }%
+  }{%
     \xdef\pgfpie@colorlist{\pgfpie@color}%
-  \fi
+  }%
   
   \foreach \pgfpie@c [count=\pgfpie@j from 0] in \pgfpie@colorlist {%
     \pgfpie@ifnum{\pgfpie@j}{=}{\pgfpie@ci}{%
@@ -440,17 +439,17 @@
   \xdef\pgfpie@angleBegin{\the\pgfpie@angleEnd}
   % drawing loop
   
-  \pgfpie@ifchangedirection{
+  \pgfpie@ifchangedirection{%
     \let\pgfpie@rlist\empty
     \foreach\x in {#1} {
-      \ifx\pgfpie@rlist\empty
+      \pgfpie@ifx\pgfpie@rlist\pgfutil@empty{%
         \xdef\pgfpie@rlist{\x}%
-      \else
+      }{%
         \xdef\pgfpie@rlist{\x,\pgfpie@rlist}%
-      \fi
-    }
-  }
-  {\xdef\pgfpie@rlist{#1}}
+      }%
+    }%
+  }%
+  {\xdef\pgfpie@rlist{#1}}%
   
   \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in \pgfpie@rlist %{#1}
   {

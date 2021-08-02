@@ -96,24 +96,10 @@
   }%
 }
 
-\def\pgfpie@findColor#1#2{%
-  \pgfmathparse{int(mod(#2,\the\pgfpie@colorLength))}%
+\def\pgfpie@findColor#1{%
+  \pgfmathparse{int(mod(#1,\the\pgfpie@colorLength))}%
   \let\pgfpie@ci\pgfmathresult
-  
-  \pgfpie@ifodd{#1}{%
-    \let\pgfpie@colorlist\empty
-    \foreach\x in \pgfpie@color {%
-      \pgfpie@ifx\pgfpie@colorlist\pgfutil@empty{%
-        \xdef\pgfpie@colorlist{\x}%
-      }{%
-        \xdef\pgfpie@colorlist{\x,\pgfpie@colorlist}%
-      }%
-    }%
-  }{%
-    \xdef\pgfpie@colorlist{\pgfpie@color}%
-  }%
-  
-  \foreach \pgfpie@c [count=\pgfpie@j from 0] in \pgfpie@colorlist {%
+  \foreach \pgfpie@c [count=\pgfpie@j from 0] in \pgfpie@color {%
     \pgfpie@ifnum{\pgfpie@j}{=}{\pgfpie@ci}{%
       \xdef\pgfpie@thecolor{\pgfpie@c}%
       \breakforeach
@@ -323,7 +309,7 @@
   % drawing loop
   \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in {#1}
   {
-    \pgfpie@findColor{0}{\pgfpie@i}
+    \pgfpie@findColor{\pgfpie@i}
 
     \pgfpie@ifdim{\pgfpie@verticalLength cm}{>}{\pgfpie@horizontalLength cm}{%
       \pgfmathparse{(\pgfpie@p) * (\pgfpie@squareUnit) / (\pgfpie@horizontalLength)}
@@ -414,7 +400,7 @@
     }}%
 
     % find color
-    \pgfpie@findColor{0}{\pgfpie@i}
+    \pgfpie@findColor{\pgfpie@i}
 
     \pgfpie@cloud{pgfpie@O}{\pgfpie@cloudR}{\pgfpie@p}
     {\pgfpie@thecolor}{\pgfpie@style}{\pgfpie@t}
@@ -450,20 +436,7 @@
 
   \xdef\pgfpie@angleBegin{\the\pgfpie@angleEnd}
   % drawing loop
-  
-  \pgfpie@ifchangedirection{%
-    \let\pgfpie@rlist\empty
-    \foreach\x in {#1} {
-      \pgfpie@ifx\pgfpie@rlist\pgfutil@empty{%
-        \xdef\pgfpie@rlist{\x}%
-      }{%
-        \xdef\pgfpie@rlist{\x,\pgfpie@rlist}%
-      }%
-    }%
-  }%
-  {\xdef\pgfpie@rlist{#1}}%
-  
-  \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in \pgfpie@rlist %{#1}
+  \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in {#1}
   {
     \pgfmathsetlength{\pgfpie@angleEnd}{\pgfpie@angleBegin}
     \pgfpie@ifpolar{%
@@ -472,17 +445,32 @@
       \pgfmathparse{sqrt(\pgfpie@p) * (\pgfpie@polarRadiusUnit)}
       \xdef\pgfpie@theradius{\pgfmathresult}
     }{%
-    % normal pie
-    \pgfmathaddtolength{\pgfpie@angleEnd}{\pgfpie@p}
-    }
+        % normal pie
+        \pgfpie@ifchangedirection{%
+            \pgfmathaddtolength{\pgfpie@angleEnd}{-\pgfpie@p}
+        }{%
+            \pgfmathaddtolength{\pgfpie@angleEnd}{\pgfpie@p}
+        }%
+    }%
 
     % find explode
     \pgfpie@findExplode{\pgfpie@i}
 
     % find color
-    \pgfpie@ifchangedirection{\pgfpie@findColor{1}{\pgfpie@i}}{\pgfpie@findColor{0}{\pgfpie@i}}    
-    \pgfpie@slice{(\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)}
-    {\the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)}
+    \pgfpie@findColor{\pgfpie@i}
+    \pgfpie@slice{
+        \pgfpie@ifchangedirection{%
+            (\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)+360
+        }{%
+            (\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)
+        }%
+    }%
+    {\pgfpie@ifchangedirection{%
+        \the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)+360
+        }{%
+        \the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)
+        }%
+    }%
     {\pgfpie@p}
     {\pgfpie@t}
     {\pgfpie@theexplode}
@@ -501,7 +489,7 @@
   \scope[node distance=0.5cm]
     \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in {#1}
     {
-      \pgfpie@findColor{0}{\pgfpie@i}
+      \pgfpie@findColor{\pgfpie@i}
       \node[draw, fill={\pgfpie@thecolor}, \pgfpie@style, below of={pgfpie@legendpos}, label={0:{\pgfpie@t}}] (pgfpie@legendpos) {};
     }
   \endscope

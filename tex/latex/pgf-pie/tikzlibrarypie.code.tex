@@ -439,12 +439,10 @@
     \xdef\pgfpie@theradius{\pgfpie@radius}%
   }
 
-
   \pgfpie@ifchangedirection{%
     \pgfmathsetlength{\pgfpie@angleEnd}{\pgfpie@sum}
   }{}%
   \xdef\pgfpie@angleBegin{\the\pgfpie@angleEnd}
-
   % drawing loop
   \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in {#1}
   {
@@ -462,7 +460,6 @@
             \pgfmathaddtolength{\pgfpie@angleEnd}{\pgfpie@p}
         }%
     }%
-
 
     % find explode
     \pgfpie@findExplode{\pgfpie@i}

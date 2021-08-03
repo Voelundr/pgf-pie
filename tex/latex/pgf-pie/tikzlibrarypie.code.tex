@@ -73,7 +73,12 @@
   % slice
   \draw[line join=round,fill={#6},\pgfpie@style] (pgfpie@O) -- ++({#1}:{#7}) arc ({#1}:{#2}:{#7}) -- cycle;
 
-  \pgfmathparse{min(((#2)-(#1)-10)/110*(-0.3),0)}
+  \pgfpie@ifchangedirection{%
+    \pgfmathparse{min(((#1)-(#2)-10)/110*(-0.3),0)}
+  }{%
+    \pgfmathparse{min(((#2)-(#1)-10)/110*(-0.3),0)}
+  }%
+  
   \pgfmathparse{(max(\pgfmathresult,-0.5) + 0.8)*(#7)}
   \let\pgfpie@innerpos\pgfmathresult
 
@@ -434,7 +439,12 @@
     \xdef\pgfpie@theradius{\pgfpie@radius}%
   }
 
+
+  \pgfpie@ifchangedirection{%
+    \pgfmathsetlength{\pgfpie@angleEnd}{\pgfpie@sum}
+  }{}%
   \xdef\pgfpie@angleBegin{\the\pgfpie@angleEnd}
+
   % drawing loop
   \foreach \pgfpie@p/\pgfpie@t [count=\pgfpie@i from 0] in {#1}
   {
@@ -453,24 +463,14 @@
         }%
     }%
 
+
     % find explode
     \pgfpie@findExplode{\pgfpie@i}
 
     % find color
     \pgfpie@findColor{\pgfpie@i}
-    \pgfpie@slice{
-        \pgfpie@ifchangedirection{%
-            (\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)+360
-        }{%
-            (\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)
-        }%
-    }%
-    {\pgfpie@ifchangedirection{%
-        \the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)+360
-        }{%
-        \the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)
-        }%
-    }%
+    \pgfpie@slice{(\pgfpie@angleBegin)/(\pgfpie@sum)*360+(\pgfpie@rotate)}
+    {\the\pgfpie@angleEnd/(\pgfpie@sum)*360+(\pgfpie@rotate)}
     {\pgfpie@p}
     {\pgfpie@t}
     {\pgfpie@theexplode}
@@ -483,7 +483,8 @@
 
 \def\pgfpie@legend#1{%
   \coordinate[xshift=0.8cm,
-  yshift={(\the\pgfpie@sliceLength*0.5+1)*0.5cm}] (pgfpie@legendpos) at
+  yshift={(\the\pgfpie@sliceLength*0.5+1)*0.5cm}] 
+  (pgfpie@legendpos) at
   (current bounding box.east);
 
   \scope[node distance=0.5cm]

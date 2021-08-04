@@ -453,12 +453,12 @@
       \pgfmathparse{sqrt(\pgfpie@p) * (\pgfpie@polarRadiusUnit)}
       \xdef\pgfpie@theradius{\pgfmathresult}
     }{%
-        % normal pie
-        \pgfpie@ifchangedirection{%
-            \pgfmathaddtolength{\pgfpie@angleEnd}{-\pgfpie@p}
-        }{%
-            \pgfmathaddtolength{\pgfpie@angleEnd}{\pgfpie@p}
-        }%
+      % normal pie
+      \pgfpie@ifchangedirection{%
+        \pgfmathaddtolength{\pgfpie@angleEnd}{-(\pgfpie@p)}
+      }{%
+        \pgfmathaddtolength{\pgfpie@angleEnd}{\pgfpie@p}
+      }%
     }%
 
     % find explode
